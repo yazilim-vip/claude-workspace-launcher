@@ -12,18 +12,18 @@ version-check:
   before_script:
     - apk add --no-cache git jq
   script:
-    - git fetch origin "$CI_DEFAULT_BRANCH"
-    - TARGET_VERSION=$(git show "origin/${CI_DEFAULT_BRANCH}:package.json" | jq -r .version)
-    - SOURCE_VERSION=$(jq -r .version package.json)
-    - echo "Target (${CI_DEFAULT_BRANCH}) version - ${TARGET_VERSION}"
-    - echo "Source (MR branch) version - ${SOURCE_VERSION}"
-    - HIGHEST=$(printf '%s\n' "$SOURCE_VERSION" "$TARGET_VERSION" | sort -V | tail -n1)
     - |
+      git fetch origin "$CI_DEFAULT_BRANCH"
+      TARGET_VERSION=$(git show "origin/${CI_DEFAULT_BRANCH}:package.json" | jq -r .version)
+      SOURCE_VERSION=$(jq -r .version package.json)
+      echo "Target (${CI_DEFAULT_BRANCH}) version: ${TARGET_VERSION}"
+      echo "Source (MR branch) version: ${SOURCE_VERSION}"
+      HIGHEST=$(printf '%s\n' "$SOURCE_VERSION" "$TARGET_VERSION" | sort -V | tail -n1)
       if [ "$HIGHEST" != "$SOURCE_VERSION" ] || [ "$SOURCE_VERSION" = "$TARGET_VERSION" ]; then
         echo "ERROR: Version ${SOURCE_VERSION} must be greater than ${TARGET_VERSION}. Bump the version in package.json."
         exit 1
       fi
-    - echo "OK: ${SOURCE_VERSION} > ${TARGET_VERSION}"
+      echo "OK: ${SOURCE_VERSION} > ${TARGET_VERSION}"
 
 build:
   stage: build
@@ -45,10 +45,10 @@ release:
   before_script:
     - apk add --no-cache curl jq
   script:
-    - VERSION=$(jq -r .version package.json)
-    - TAG="v${VERSION}"
-    - echo "Creating tag ${TAG}"
     - |
+      VERSION=$(jq -r .version package.json)
+      TAG="v${VERSION}"
+      echo "Creating tag ${TAG}"
       curl --fail --request POST \
         --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
         "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/repository/tags?tag_name=${TAG}&ref=${CI_COMMIT_SHA}"
