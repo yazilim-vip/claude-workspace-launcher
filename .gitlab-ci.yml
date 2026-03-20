@@ -17,12 +17,9 @@ version-check:
     - SOURCE_VERSION=$(jq -r .version package.json)
     - echo "Target (${CI_DEFAULT_BRANCH}) version - ${TARGET_VERSION}"
     - echo "Source (MR branch) version - ${SOURCE_VERSION}"
+    - HIGHEST=$(printf '%s\n' "$SOURCE_VERSION" "$TARGET_VERSION" | sort -V | tail -n1)
     - |
-      version_gt() {
-        [ "$(printf '%s\n' "$1" "$2" | sort -V | tail -n1)" = "$1" ] && [ "$1" != "$2" ]
-      }
-    - |
-      if ! version_gt "$SOURCE_VERSION" "$TARGET_VERSION"; then
+      if [ "$HIGHEST" != "$SOURCE_VERSION" ] || [ "$SOURCE_VERSION" = "$TARGET_VERSION" ]; then
         echo "ERROR: Version ${SOURCE_VERSION} must be greater than ${TARGET_VERSION}. Bump the version in package.json."
         exit 1
       fi
