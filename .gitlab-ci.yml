@@ -3,6 +3,9 @@ stages:
   - build
   - publish
 
+# ──────────────────────────────────────────────
+# MR to main: ensure package.json version was bumped
+# ──────────────────────────────────────────────
 version-check:
   stage: check
   image: alpine:3.20
@@ -24,6 +27,9 @@ version-check:
       fi
       echo "OK: ${SOURCE_VERSION} > ${TARGET_VERSION}"
 
+# ──────────────────────────────────────────────
+# Build on every pipeline
+# ──────────────────────────────────────────────
 build:
   stage: build
   image: node:20-alpine
@@ -36,6 +42,9 @@ build:
       - "*.vsix"
     expire_in: 1 week
 
+# ──────────────────────────────────────────────
+# Publish to VS Code Marketplace on merge to main
+# ──────────────────────────────────────────────
 publish:
   stage: publish
   image: node:20-alpine
