@@ -32,3 +32,44 @@ npm install
 npm run compile
 # Press F5 in VS Code to launch Extension Development Host
 ```
+
+## Local Testing
+
+There are two ways to test the extension locally:
+
+### Option 1: Extension Development Host (F5)
+
+1. Open this project in VS Code
+2. Press **F5** (or run the `Run Extension` launch config)
+3. A new VS Code window opens with the extension loaded
+4. Test commands via Command Palette (`Cmd+Shift+P` → "Claude: ...")
+5. Changes require restarting the Extension Development Host
+
+### Option 2: Install VSIX locally
+
+Package and install the extension into your main VS Code instance:
+
+```bash
+# Build the .vsix package
+npx @vscode/vsce package
+
+# Install it
+code --install-extension claude-workspace-*.vsix
+```
+
+After installing, reload VS Code (`Cmd+Shift+P` → "Developer: Reload Window").
+
+To uninstall later:
+
+```bash
+code --uninstall-extension yazilim-vip.claude-workspace
+```
+
+### VS Code Tasks
+
+Use **Terminal → Run Task...** for common build operations:
+
+- **Compile** — `npm run compile` (default build task, `Cmd+Shift+B`)
+- **Watch** — `npm run watch` (recompile on file changes)
+- **Package VSIX** — builds the `.vsix` file
+- **Install VSIX** — packages and installs into local VS Code

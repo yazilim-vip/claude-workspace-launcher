@@ -42,13 +42,26 @@ function launchClaude(args: string[], cwd: string): void {
 }
 
 export function activate(context: vscode.ExtensionContext): void {
-  // Start a fresh session
+  // Start a fresh session (optionally named)
   context.subscriptions.push(
-    vscode.commands.registerCommand("claude-workspace.startSession", () => {
+    vscode.commands.registerCommand("claude-workspace.startSession", async () => {
       const folders = ensureWorkspaceFolders();
       if (!folders) return;
 
-      const { cwd, args } = buildClaudeArgs(folders);
+      const sessionName = await vscode.window.showInputBox({
+        prompt: "Session name (leave empty for unnamed session)",
+        placeHolder: "e.g. auth-refactor",
+      });
+
+      // undefined means the user pressed Escape → cancel
+      if (sessionName === undefined) return;
+
+      const extra: string[] = [];
+      if (sessionName) {
+        extra.push("--name", sessionName);
+      }
+
+      const { cwd, args } = buildClaudeArgs(folders, extra);
       launchClaude(args, cwd);
     })
   );
