@@ -2,11 +2,15 @@
   "name": "claude-workspace",
   "displayName": "Claude Workspace",
   "description": "Launch Claude Code sessions with all workspace folders via --add-dir",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "yazilim-vip",
   "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/yazilim-vip/community/vscode/claude-workspace-launcher"
   },
   "categories": [
     "Other"
