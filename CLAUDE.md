@@ -4,10 +4,10 @@ VS Code extension that launches Claude Code sessions with all workspace folders 
 
 ## Git Workflow
 
-- **Never push directly to `main`.** All changes must go through a merge request.
-- Every MR targeting `main` **must** bump the version in `package.json` (semver: major, minor, or patch).
-- The CI `version-check` job enforces this — MRs without a version bump will fail.
-- On merge to `main`, CI automatically publishes to the VS Code Marketplace and creates a GitLab release with a `vX.Y.Z` tag.
+- **Never push directly to `main`.** All changes must go through a pull request.
+- Every PR targeting `main` **must** bump the version in `package.json` (semver: major, minor, or patch).
+- The CI `version-check` job enforces this — PRs without a version bump will fail.
+- On merge to `main`, CI automatically publishes to the VS Code Marketplace and creates a GitHub release with a `vX.Y.Z` tag.
 
 ## Versioning Guide
 
@@ -22,7 +22,7 @@ VS Code extension that launches Claude Code sessions with all workspace folders 
 ```
 src/extension.ts    — extension entry point (activate/deactivate)
 package.json        — manifest, commands, marketplace metadata
-.gitlab-ci.yml     — CI: version-check, build, publish, release
+.github/workflows/ — CI: version-check, build, publish, release
 ```
 
 ## Build & Run
