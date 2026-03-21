@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/yazilim.vip/community/vscode/claude-workspace-launcher"
+    "url": "https://github.com/yazilim-vip/claude-workspace-launcher"
   },
   "categories": [
     "Other"
