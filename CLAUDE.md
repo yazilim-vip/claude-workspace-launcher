@@ -4,6 +4,7 @@ VS Code extension that launches Claude Code sessions with all workspace folders 
 
 ## Git Workflow
 
+- **Always fetch and update local `main` before creating a feature branch.** Run `git checkout main && git pull origin main` first, then create the feature branch from `main`.
 - **Never push directly to `main`.** All changes must go through a pull request.
 - Every PR targeting `main` **must** bump the version in `package.json` (semver: major, minor, or patch).
 - The CI `version-check` job enforces this — PRs without a version bump will fail.
