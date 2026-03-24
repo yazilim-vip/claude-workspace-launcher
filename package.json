@@ -2,7 +2,7 @@
   "name": "claude-workspace",
   "displayName": "Claude Workspace",
   "description": "Launch Claude Code sessions with all workspace folders via --add-dir",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "publisher": "yazilim-vip",
   "license": "MIT",
   "icon": "icon.png",
