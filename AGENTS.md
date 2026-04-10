@@ -4,13 +4,13 @@ VS Code extension that launches Claude Code sessions with multi-folder workspace
 
 ## IMPORTANT: Read skills FIRST
 
-Before making ANY changes, you MUST read the relevant `.skills/` files. They contain the project's conventions, patterns, and capabilities. Do not guess or improvise — the answers are there.
+Before making ANY changes, you MUST read the relevant `.ai/skills/` files. They contain the project's conventions, patterns, and capabilities. Do not guess or improvise — the answers are there.
 
-- `.skills/vscode-extension-dev/` — extension architecture, command registration, CI/CD pipeline, publishing rules
+- `.ai/skills/vscode-extension-dev/` — extension architecture, command registration, CI/CD pipeline, publishing rules
 
 ## Skills
 
-- Skills: `.skills/` — on-demand agent capabilities and project knowledge following [agentskills.io](https://agentskills.io/specification)
+- Skills: `.ai/skills/` — on-demand agent capabilities and project knowledge following [agentskills.io](https://agentskills.io/specification)
 
 ## Tech Stack
 
