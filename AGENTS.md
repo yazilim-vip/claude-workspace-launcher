@@ -63,6 +63,19 @@ out/
 1. **F5 in VS Code** — opens Extension Development Host, test via Command Palette
 2. **Install VSIX** — `npx @vscode/vsce package` then `code --install-extension claude-workspace-*.vsix`
 
+Exercise both `claudeWorkspace.terminalLocation` values and a workspace folder whose path contains a
+space (the `--add-dir` quoting path).
+
+The platform traps that make a launch fail *silently* — a second Extension Development Host for the
+same extension path swallowed with exit 0, `code` handing off to the already-running instance so CLI
+environment changes do not apply, and a dev host restoring its previous workspace — are documented
+once in the yvip-ai `dev-coding` skill's VS Code extension reference. Read it before debugging a
+launch that appears to do nothing.
+
+A VS Code window launched from inside a Claude Code session inherits `CLAUDE_CODE_CHILD_SESSION`, and
+the `claude` it starts will not persist a transcript. Unset it for that window's terminals with
+`"terminal.integrated.env.osx": { "CLAUDE_CODE_CHILD_SESSION": null }`.
+
 ## CI/CD (GitHub Actions)
 
 4-stage pipeline:

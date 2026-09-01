@@ -20,6 +20,7 @@ If you work with multi-root workspaces (monorepos, microservices, full-stack pro
 
 | Command | What it does |
 |---------|-------------|
+| **Claude: Launch…** | One entry point — pick New / Continue / Resume from a quick pick. |
 | **Claude: Start Session** | Start a new session. Optionally give it a name for easy reference later. |
 | **Claude: Continue Last Session** | Pick up right where you left off (`claude --continue`). |
 | **Claude: Resume Session** | Browse and resume any previous session (`claude --resume`). |
@@ -39,6 +40,36 @@ claude --add-dir /home/user/libs/shared-types --add-dir /projects/frontend
 ```
 
 The folders can live anywhere on your filesystem — different repos, different parent directories, different drives. VS Code multi-root workspaces let you group them, and this extension makes sure Claude sees them all.
+
+
+## Terminal Title
+
+The terminal tab is named after the session, so several Claude tabs stay distinguishable:
+
+| Command | Tab title |
+| --- | --- |
+| Start Session, named | the session name |
+| Start Session, unnamed | `Claude` |
+| Continue Last Session | `Claude (last)` |
+| Resume Session | `Claude (resume)` |
+
+The title reflects the name given **at launch**. Renaming a session later from inside the CLI
+(`/rename`) does not retitle the tab — use `Terminal: Rename` for that.
+
+## Settings
+
+| Setting | Default | Values |
+| --- | --- | --- |
+| `claudeWorkspace.terminalLocation` | `panel` | `panel` — bottom terminal panel<br>`editor` — editor tab in the active group |
+
+## Keybindings
+
+None are shipped, so the extension never claims a chord that clashes with your other tools. Bind the
+single entry point yourself in `keybindings.json`:
+
+```json
+{ "key": "cmd+2", "command": "claude-workspace.launch" }
+```
 
 ## Use Cases
 

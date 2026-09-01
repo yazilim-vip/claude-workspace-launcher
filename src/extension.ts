@@ -1,5 +1,13 @@
 import * as vscode from "vscode";
 
+/** Session names are used verbatim on the CLI, so keep them shell-safe. */
+const SESSION_NAME_PATTERN = /^[A-Za-z0-9._-]+$/;
+
+/** Single-quote a value for POSIX shells (workspace paths may contain spaces). */
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`;
+}
+
 /**
  * Build the claude CLI arguments from workspace folders.
  *
@@ -14,7 +22,7 @@ function buildClaudeArgs(
   const args: string[] = [...extra];
 
   for (const folder of rest) {
-    args.push("--add-dir", folder.uri.fsPath);
+    args.push("--add-dir", shellQuote(folder.uri.fsPath));
   }
 
   return { cwd: primary.uri.fsPath, args };
@@ -31,14 +39,32 @@ function ensureWorkspaceFolders(): readonly vscode.WorkspaceFolder[] | undefined
   return folders;
 }
 
-function launchClaude(args: string[], cwd: string): void {
+/**
+ * Where new terminals open, from `claudeWorkspace.terminalLocation`.
+ * Defaults to the bottom panel — the behaviour every existing install has.
+ */
+function terminalLocation():
+  | vscode.TerminalLocation
+  | vscode.TerminalEditorLocationOptions {
+  const setting = vscode.workspace
+    .getConfiguration("claudeWorkspace")
+    .get<string>("terminalLocation", "panel");
+
+  return setting === "editor"
+    ? { viewColumn: vscode.ViewColumn.Active }
+    : vscode.TerminalLocation.Panel;
+}
+
+function launchClaude(args: string[], cwd: string, title: string): void {
   const terminal = vscode.window.createTerminal({
-    name: "Claude",
+    name: title,
     cwd,
+    location: terminalLocation(),
+    iconPath: new vscode.ThemeIcon("sparkle"),
+    color: new vscode.ThemeColor("terminal.ansiMagenta"),
   });
   terminal.show();
-  const cmd = ["claude", ...args].join(" ");
-  terminal.sendText(cmd);
+  terminal.sendText(["claude", ...args].join(" "));
 }
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -51,6 +77,10 @@ export function activate(context: vscode.ExtensionContext): void {
       const sessionName = await vscode.window.showInputBox({
         prompt: "Session name (leave empty for unnamed session)",
         placeHolder: "e.g. auth-refactor",
+        validateInput: (value) =>
+          !value || SESSION_NAME_PATTERN.test(value)
+            ? undefined
+            : "Use letters, digits, dot, underscore or hyphen only.",
       });
 
       // undefined means the user pressed Escape → cancel
@@ -62,7 +92,7 @@ export function activate(context: vscode.ExtensionContext): void {
       }
 
       const { cwd, args } = buildClaudeArgs(folders, extra);
-      launchClaude(args, cwd);
+      launchClaude(args, cwd, sessionName || "Claude");
     })
   );
 
@@ -73,7 +103,7 @@ export function activate(context: vscode.ExtensionContext): void {
       if (!folders) return;
 
       const { cwd, args } = buildClaudeArgs(folders, ["--continue"]);
-      launchClaude(args, cwd);
+      launchClaude(args, cwd, "Claude (last)");
     })
   );
 
@@ -84,7 +114,36 @@ export function activate(context: vscode.ExtensionContext): void {
       if (!folders) return;
 
       const { cwd, args } = buildClaudeArgs(folders, ["--resume"]);
-      launchClaude(args, cwd);
+      launchClaude(args, cwd, "Claude (resume)");
+    })
+  );
+
+  // Single entry point: pick a mode, then delegate to the command that owns it
+  context.subscriptions.push(
+    vscode.commands.registerCommand("claude-workspace.launch", async () => {
+      const picked = await vscode.window.showQuickPick(
+        [
+          {
+            label: "New session",
+            detail: "Start a fresh session (asks for a name)",
+            command: "claude-workspace.startSession",
+          },
+          {
+            label: "Continue last",
+            detail: "Resume the most recent conversation",
+            command: "claude-workspace.continueSession",
+          },
+          {
+            label: "Resume…",
+            detail: "Pick from past sessions",
+            command: "claude-workspace.resumeSession",
+          },
+        ],
+        { placeHolder: "Claude session" }
+      );
+
+      if (!picked) return;
+      await vscode.commands.executeCommand(picked.command);
     })
   );
 }
