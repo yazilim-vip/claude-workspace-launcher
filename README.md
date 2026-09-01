@@ -1,33 +1,62 @@
-# Claude Workspace Launcher
+# Claude Workspace
 
-**Launch Claude Code with full multi-folder context — straight from VS Code.**
+**Start, name, and resume Claude Code sessions from VS Code — with every workspace folder already in context.**
 
-If you work with multi-root workspaces (monorepos, microservices, full-stack projects), you know the pain: Claude Code only sees one directory at a time. This extension fixes that. It automatically passes every folder in your VS Code workspace to `claude` via `--add-dir`, so Claude has the full picture from the start.
+Run `claude` in a VS Code terminal without leaving the editor. Pick a mode from one command, give the
+session a name, and get a terminal tab labelled with that name so several sessions stay straight.
+Every folder in the window is wired up for you — one folder or six, no configuration either way.
 
-## Why Use This?
+## Features
 
-- **Multi-folder awareness** — Claude Code sees all your workspace folders, not just one. No more switching directories or losing context.
-- **Named sessions** — Tag sessions with meaningful names like `auth-refactor` or `bug-fix-123` so you can find and resume them later.
-- **Session continuity** — Continue your last session or resume any previous one with a single command. Your conversation history and context carry over.
-- **Zero config** — Works out of the box. Just open your workspace and run a command.
+- **All your folders, automatically** — the first workspace folder becomes the working directory and
+  every other one is passed as `--add-dir`. Monorepo packages, a library and its consumers, Terraform
+  beside the app it deploys: Claude sees them all from the first prompt, and they don't have to share
+  a parent directory.
+- **One command, three modes** — `Claude: Launch…` opens a quick pick for New, Continue last, or
+  Resume. Bind that one and you're done.
+- **Named sessions** — name a session `auth-refactor` or `bug-fix-123` and find it again later with
+  Resume.
+- **Readable terminal tabs** — each session's tab is titled with its name, so five open Claude tabs
+  are five distinguishable tabs rather than five that say `claude`.
+- **Nothing to configure** — no API keys, no settings file, no shipped keybindings. Install it, open a
+  workspace, run a command.
 
 ## Quick Start
 
-1. Install [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) (`claude` must be on your PATH)
-2. Install this extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=yazilim-vip.claude-workspace)
+1. Install the [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) — VS Code 1.85+ and
+   `claude` on your PATH are the only requirements
+2. Install this extension from the
+   [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=yazilim-vip.claude-workspace)
 3. Open a workspace with one or more folders
-4. Open the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and run any of:
+4. Open the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and run **Claude: Launch…**
 
-| Command | What it does |
-|---------|-------------|
-| **Claude: Launch…** | One entry point — pick New / Continue / Resume from a quick pick. |
-| **Claude: Start Session** | Start a new session. Optionally give it a name for easy reference later. |
-| **Claude: Continue Last Session** | Pick up right where you left off (`claude --continue`). |
-| **Claude: Resume Session** | Browse and resume any previous session (`claude --resume`). |
+## Commands
 
-## How It Works
+Most people only need one of these. Bind **Claude: Launch…** and use it for everything.
 
-The first folder in your workspace becomes the working directory. Every additional folder is passed as `--add-dir`:
+**`Claude: Launch…`** — the entry point. Opens a quick pick: New session, Continue last, or Resume.
+Bind it in `keybindings.json`:
+
+```json
+{ "key": "cmd+2", "command": "claude-workspace.launch" }
+```
+
+No keybindings ship with the extension, so it never steals a chord from your other tools.
+
+The three modes are also available as commands of their own, if you'd rather bind them individually:
+
+| Command | Runs |
+| --- | --- |
+| **Claude: Start Session** | `claude --name <name>` — prompts for a name; leave it empty for an unnamed session |
+| **Claude: Continue Last Session** | `claude --continue` |
+| **Claude: Resume Session** | `claude --resume` — pick from the CLI's own session list |
+
+Session names accept letters, digits, `.`, `_` and `-`.
+
+## Workspace Folders
+
+Every command builds the same argument list. The first folder in the window is the working directory;
+the rest are passed as `--add-dir`:
 
 ```
 # Workspace with 3 folders — they don't need to share a parent:
@@ -39,12 +68,9 @@ claude --add-dir /home/user/libs/shared-types --add-dir /projects/frontend
 #      ↑ runs in /work/backend-api (cwd)
 ```
 
-The folders can live anywhere on your filesystem — different repos, different parent directories, different drives. VS Code multi-root workspaces let you group them, and this extension makes sure Claude sees them all.
+## Terminal Tabs
 
-
-## Terminal Title
-
-The terminal tab is named after the session, so several Claude tabs stay distinguishable:
+Each session's terminal is titled so several stay distinguishable, and marked with a sparkle icon:
 
 | Command | Tab title |
 | --- | --- |
@@ -56,32 +82,8 @@ The terminal tab is named after the session, so several Claude tabs stay disting
 The title reflects the name given **at launch**. Renaming a session later from inside the CLI
 (`/rename`) does not retitle the tab — use `Terminal: Rename` for that.
 
-## Settings
-
-| Setting | Default | Values |
-| --- | --- | --- |
-| `claudeWorkspace.terminalLocation` | `panel` | `panel` — bottom terminal panel<br>`editor` — editor tab in the active group |
-
-## Keybindings
-
-None are shipped, so the extension never claims a chord that clashes with your other tools. Bind the
-single entry point yourself in `keybindings.json`:
-
-```json
-{ "key": "cmd+2", "command": "claude-workspace.launch" }
-```
-
-## Use Cases
-
-- **Monorepos** — Give Claude visibility into packages, shared libraries, and apps simultaneously.
-- **Full-stack projects** — Let Claude see both your API and frontend code to keep contracts in sync.
-- **Infrastructure + Application** — Work on Terraform modules alongside the app code they deploy.
-- **Libraries + Consumers** — Edit a library and its downstream consumers in one session with full context.
-
-## Requirements
-
-- VS Code 1.85+
-- [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) installed and available on PATH
+Set `claudeWorkspace.terminalLocation` to `editor` to open sessions as an editor tab in the active
+group instead of in the bottom panel (`panel` is the default).
 
 ## License
 
